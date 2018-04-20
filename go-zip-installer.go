@@ -103,7 +103,7 @@ func install(filepath string) {
 	if err != nil {
 		fmt.Printf("There was an error installing the file: %v", err)
 	}
-	fmt.Println(stdout)
+	fmt.Println(string(stdout))
 }
 
 func main() {
