@@ -7,18 +7,19 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 )
 
-func downloadZip(githubRepo string) string {
+func downloadZip(githubRepo string) (string, error) {
 	splitURL := strings.Split(githubRepo, "/")
 
 	// Create the zip folder
 	zipFilepath := fmt.Sprintf("./tmp/%v.zip", splitURL[len(splitURL)-1])
 	out, err := os.Create(zipFilepath)
 	if err != nil {
-		fmt.Println(err)
+		return "", err
 	}
 
 	var baseURL bytes.Buffer
@@ -33,17 +34,17 @@ func downloadZip(githubRepo string) string {
 
 	resp, err := http.Get(baseURL.String())
 	if err != nil {
-		fmt.Println(err)
+		return "", err
 	}
 	defer resp.Body.Close()
 
 	_, err = io.Copy(out, resp.Body)
 	if err != nil {
-		fmt.Println(err)
+		return "", err
 	}
 	out.Close()
 
-	return zipFilepath
+	return zipFilepath, nil
 }
 
 func copyToGopath(src string, githubURL string) ([]string, error) {
@@ -68,10 +69,7 @@ func copyToGopath(src string, githubURL string) ([]string, error) {
 
 		cleanName := strings.Split(f.Name, "/")[1:]
 		fname := strings.Join(cleanName, "/")
-
 		fpath := filepath.Join(dest, fname)
-		// fpath = strings.Replace(fpath, "\\ConradPacesa-price-checker-758ed21", "", -1)
-		fmt.Println(fpath)
 		filenames = append(filenames, fpath)
 
 		if f.FileInfo().IsDir() {
@@ -99,6 +97,15 @@ func copyToGopath(src string, githubURL string) ([]string, error) {
 	return filenames, nil
 }
 
+func install(filepath string) {
+	cmd := exec.Command("go", "install", filepath)
+	stdout, err := cmd.CombinedOutput()
+	if err != nil {
+		fmt.Printf("There was an error installing the file: %v", err)
+	}
+	fmt.Println(stdout)
+}
+
 func main() {
 	os.Getenv("http_proxy")
 	os.Getenv("https_proxy")
@@ -106,15 +113,20 @@ func main() {
 	githubRepo := os.Args[1]
 
 	fmt.Println("Downloading Zip...")
-	zipFilepath := downloadZip(githubRepo)
+	zipFilepath, err := downloadZip(githubRepo)
+	if err != nil {
+		fmt.Printf("There was an error downloading the file %v", err)
+	}
 
 	fmt.Println("Unzipping file into $GOPATH")
-	_, err := copyToGopath(zipFilepath, githubRepo)
+	_, err = copyToGopath(zipFilepath, githubRepo)
 	if err != nil {
 		fmt.Printf("There was an error copying the files over %v", err)
 	}
 
 	fmt.Println("Installing Go packages...")
+
+	install(githubRepo)
 
 	// Close the outfile and delete it
 	err = os.Remove(zipFilepath)
