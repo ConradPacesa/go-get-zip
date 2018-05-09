@@ -11,10 +11,12 @@ import (
 
 // CopyToGopath unzips the zip file in the tmp folder into the appropriate
 // folder in the $GOPATH
-func CopyToGopath(src string, githubURL string) ([]string, error) {
+func CopyToGopath(src, githubURL string) ([]string, error) {
 	gopath := os.Getenv("GOPATH")
 
 	dest := fmt.Sprintf("%v/src/%v", gopath, githubURL)
+
+	fmt.Println(dest)
 
 	var filenames []string
 
@@ -58,5 +60,6 @@ func CopyToGopath(src string, githubURL string) ([]string, error) {
 			}
 		}
 	}
+
 	return filenames, nil
 }
