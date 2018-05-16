@@ -17,7 +17,7 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		fmt.Printf("Installed %s", f)
+		fmt.Printf("Installed %s\n", f)
 	}
 
 	fmt.Println("All done!")

@@ -7,14 +7,23 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/ConradPacesa/go-get-zip/downloader"
 )
 
 // CopyToGopath unzips the zip file in the tmp folder into the appropriate
 // folder in the $GOPATH
 func CopyToGopath(src, githubURL string) ([]string, error) {
 	gopath := os.Getenv("GOPATH")
+	var dest string
 
-	dest := fmt.Sprintf("%v/src/%v", gopath, githubURL)
+	parsedGithubURL := downloader.ParseGithubURL(githubURL)
+
+	if parsedGithubURL.Source == "gitub" {
+		dest = fmt.Sprintf("%v/src/%v", gopath, parsedGithubURL.URL)
+	} else {
+		dest = fmt.Sprintf("%v/src/gopkg.in/%v.%v", gopath, parsedGithubURL.RepoName, parsedGithubURL.Version)
+	}
 
 	fmt.Println(dest)
 
