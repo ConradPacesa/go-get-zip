@@ -49,12 +49,15 @@ func GetImports(zipFilepath, githubRepo string) ([]string, error) {
 
 // DownloadZip downloads the GitHub Repo as a zip file into the tmp directory
 func DownloadZip(githubRepo string) (string, error) {
+	gopath := os.Getenv("GOPATH")
+
 	parsedGHRepo := ParseGithubURL(githubRepo)
 
 	splitURL := strings.Split(parsedGHRepo.URL, "/")
 
 	// Create the zip folder
-	zipFilepath := fmt.Sprintf("./tmp/%v.zip", splitURL[len(splitURL)-1])
+	zipFilepath := fmt.Sprintf("%v/%v.zip", gopath, splitURL[len(splitURL)-1])
+	fmt.Println(zipFilepath)
 
 	out, err := os.Create(zipFilepath)
 	if err != nil {
