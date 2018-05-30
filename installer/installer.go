@@ -2,6 +2,7 @@ package installer
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 
@@ -12,20 +13,20 @@ import (
 // Install recursively finds all the dependencies and installs them
 func Install(githubRepo string) (string, error) {
 
-	fmt.Println("Downloading Zip...")
+	fmt.Printf("Downloading %v zip\n", githubRepo)
 
 	// Download the zipfile into the tmp folder
 	zipFilepath, err := downloader.DownloadZip(githubRepo)
 	if err != nil {
-		fmt.Printf("There was an error downloading the file %v", err)
+		log.Fatalf("There was an error downloading the file %v", err)
 	}
 
-	fmt.Println("Unzipping file into $GOPATH")
+	fmt.Printf("Unzipping %v into GOPATH\n", githubRepo)
 
 	// Unzip the contents from the zipfile into the $GOPATH
 	file, err := copier.CopyToGopath(zipFilepath, githubRepo)
 	if err != nil {
-		fmt.Printf("There was an error copying the files over %v", err)
+		log.Fatalf("There was an error copying the files over %v", err)
 	}
 
 	// Get the root of unzipped filepath
@@ -34,32 +35,28 @@ func Install(githubRepo string) (string, error) {
 	// List all the dependencies of the downloaded package
 	imports, err := downloader.GetImports(fp, githubRepo)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
-
-	fmt.Println(imports)
 
 	for _, im := range imports {
 		_, err := Install(im)
 		if err != nil {
-			fmt.Println(err)
+			log.Fatal(err)
 		}
 	}
 
-	fmt.Println("Installing Go packages...")
+	fmt.Printf("Installing %v\n", githubRepo)
 
 	// Install the unzipped files
-	f, err := InstallPackage(githubRepo)
+	_, err = InstallPackage(githubRepo)
 	if err != nil {
-		fmt.Printf("There was an error installing the package %s: %s", githubRepo, err)
-	} else {
-		fmt.Println(f)
+		log.Fatalf("There was an error installing the package %s: %s", githubRepo, err)
 	}
 
 	// Close the outfile and delete it
 	err = os.Remove(zipFilepath)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
 
 	return githubRepo, nil

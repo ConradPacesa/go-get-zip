@@ -25,8 +25,6 @@ func CopyToGopath(src, githubURL string) ([]string, error) {
 		dest = fmt.Sprintf("%v/src/gopkg.in/%v.%v", gopath, parsedGithubURL.RepoName, parsedGithubURL.Version)
 	}
 
-	fmt.Println(dest)
-
 	var filenames []string
 
 	r, err := zip.OpenReader(src)
