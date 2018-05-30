@@ -14,4 +14,4 @@ In order to get started with go-get-zip clone this directory, or download and un
 
 ## Usage
 
-Run `go-get-zip <package you want to install>` from the command line. For example `go-get-zip github.com/conradpcesa/go-get-zip` or `go-get-zip gopkg.in/yaml.v1`. You can also install all the dependencies in a prject by going to the directory and running `go-get-zip` (similar to running `go get` to install all go dependencies).
+Run `go-get-zip <package you want to install>` from the command line. For example `go-get-zip github.com/conradpcesa/go-get-zip` or `go-get-zip gopkg.in/yaml.v1`. You can also install all the dependencies in a project by going to the directory and running `go-get-zip` (similar to running `go get` to install all go dependencies).
