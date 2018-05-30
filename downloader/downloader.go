@@ -35,10 +35,10 @@ func GetImports(zipFilepath, githubRepo string) ([]string, error) {
 	var importList []string
 
 	for _, d := range depList {
-		if strings.HasPrefix(d, "github.com") {
-			fmt.Println(strings.Split(d, "/")[:2])
-			fmt.Println(githubRepoSlice[:2])
-		}
+		// if strings.HasPrefix(d, "github.com") {
+		// 	fmt.Println(strings.Split(d, "/")[:2])
+		// 	fmt.Println(githubRepoSlice[:2])
+		// }
 		if strings.HasPrefix(d, "github.com") && !reflect.DeepEqual(strings.Split(d, "/")[:3], githubRepoSlice[:3]) {
 			importList = append(importList, d)
 		}
@@ -57,7 +57,6 @@ func DownloadZip(githubRepo string) (string, error) {
 
 	// Create the zip folder
 	zipFilepath := fmt.Sprintf("%v/%v.zip", gopath, splitURL[len(splitURL)-1])
-	fmt.Println(zipFilepath)
 
 	out, err := os.Create(zipFilepath)
 	if err != nil {
@@ -168,8 +167,6 @@ func createAPIURL(githubRepo Repo) string {
 	baseURL.WriteString("/zipball/")
 	baseURL.WriteString(githubRepo.Version)
 
-	fmt.Println(baseURL.String())
-
 	return baseURL.String()
 }
 
@@ -187,8 +184,6 @@ func createAltURL(githubRepo Repo) string {
 	baseURL.WriteString("/archive/")
 	baseURL.WriteString(githubRepo.Version)
 	baseURL.WriteString(".zip")
-
-	fmt.Println(baseURL.String())
 
 	return baseURL.String()
 }
