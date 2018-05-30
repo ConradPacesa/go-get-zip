@@ -19,7 +19,7 @@ func CopyToGopath(src, githubURL string) ([]string, error) {
 
 	parsedGithubURL := downloader.ParseGithubURL(githubURL)
 
-	if parsedGithubURL.Source == "gitub" {
+	if parsedGithubURL.Source == "github" {
 		dest = fmt.Sprintf("%v/src/%v", gopath, parsedGithubURL.URL)
 	} else {
 		dest = fmt.Sprintf("%v/src/gopkg.in/%v.%v", gopath, parsedGithubURL.RepoName, parsedGithubURL.Version)
